@@ -1,0 +1,28 @@
+---
+    # Подробнее по использованию этого плейбука на моём сайте
+    # https://max-ko.ru/54-dobavlenie-polzovatelja-i-publickey-na-udalennye-servera-s-pomoschju-ansible.html
+- hosts: all
+  become: true
+  remote_user: root
+  tasks:
+
+  - name: Добавить пользователя 'lnxcfg' с добавлением его в группу 'wheel'. В CentOS 7 группа 'wheel' даёт права sudo
+    user:
+      name: lnxcfg
+      password: <ХЭШ ПАРОЛЯ>
+      shell: /bin/bash
+      groups: wheel
+      append: yes
+
+  - name: Создать 2048-битовый SSH ключ для lnxcfg в ~lnxcfg/.ssh/id_rsa
+    user:
+      name: lnxcfg
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+
+  - name: Установить authorized key из файла id_rsa.pub
+    authorized_key:
+      user: lnxcfg
+      state: present
+      key: "{{ lookup('file', '/home/lnxcfg/.ssh/id_rsa.pub') }}"
