@@ -1,0 +1,4 @@
+- name: Manually create the initial virtualenv
+  command:
+     cmd: "python3.6 -m venv /tam/gde/dir"
+     creates: "/tam/gde/dir"
